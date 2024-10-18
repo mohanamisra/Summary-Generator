@@ -15,23 +15,11 @@
             padding: 10px;
             margin: 10px 0;
         }
-        #summarizeForm {
-            display: none; /* Hidden until a file is uploaded */
-        }
-        #rangeValue {
-            font-weight: bold;
-        }
+        
     </style>
 </head>
 <body>
     <h1>Summarize Product Reviews</h1>
-
-    <!-- Upload Form -->
-    <form id="uploadForm" enctype="multipart/form-data">
-        <label for="fileInput">Upload CSV file:</label><br>
-        <input type="file" id="fileInput" name="file" accept=".csv" required><br>
-        <button type="submit">Upload and Process</button>
-    </form>
 
     <!-- Summarize Form (Hidden by default) -->
     <form id="summarizeForm">
@@ -49,7 +37,7 @@
     <div id="result"></div>
 
     <script>
-        const uploadForm = document.getElementById('uploadForm');
+        //const uploadForm = document.getElementById('uploadForm');
         const summarizeForm = document.getElementById('summarizeForm');
         const range = document.getElementById('summaryLength');
         const rangeValue = document.getElementById('rangeValue');
@@ -61,26 +49,26 @@
         });
 
         // Handle file upload
-        uploadForm.addEventListener('submit', function(event) {
-            event.preventDefault();
+        // uploadForm.addEventListener('submit', function(event) {
+          //  event.preventDefault();
 
-            const formData = new FormData(uploadForm);
+            //const formData = new FormData(uploadForm);
 
-            fetch('/upload', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    alert(data.message);
-                    summarizeForm.style.display = 'block'; // Show summarize form after successful upload
-                } else {
-                    alert(data.error);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-        });
+            //fetch('/upload', {
+              //  method: 'POST',
+                //body: formData
+            //})
+            //.then(response => response.json())
+            //.then(data => {
+               // if (data.message) {
+                 //   alert(data.message);
+                   // summarizeForm.style.display = 'block'; // Show summarize form after successful upload
+                //} else {
+                  //  alert(data.error);
+                //}
+            //})
+            //.catch(error => console.error('Error:', error));
+        //}); -->
 
         // Handle summarization form submission
         summarizeForm.addEventListener('submit', function(event) {
