@@ -15,27 +15,37 @@
             padding: 10px;
             margin: 10px 0;
         }
+        #summarizeForm {
+            display: none; /* Hidden until a file is uploaded */
+        }
+        #rangeValue {
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
     <h1>Summarize Product Reviews</h1>
+
+    <!-- Upload Form -->
     <form id="uploadForm" enctype="multipart/form-data">
-        <label for="fileInput">Upload CSV file:</label>
+        <label for="fileInput">Upload CSV file:</label><br>
         <input type="file" id="fileInput" name="file" accept=".csv" required><br>
         <button type="submit">Upload and Process</button>
     </form>
 
-    <form id="summarizeForm" style="display: none;">
-        <label for="productInput">Enter Product Name/Category:</label>
+    <!-- Summarize Form (Hidden by default) -->
+    <form id="summarizeForm">
+        <label for="productInput">Enter Product Name/Category:</label><br>
         <input type="text" id="productInput" name="user_input" placeholder="Product Name" required><br>
 
-        <label for="summaryLength">Summary Length:</label>
-        <input type="range" id="summaryLength" name="input_length" min="50" max="100" value="50">
-        <span id="rangeValue">150</span> words<br>
+        <label for="summaryLength">Summary Length:</label><br>
+        <input type="range" id="summaryLength" name="input_length" min="10" max="100" value="50">
+        <span id="rangeValue">100</span> words<br>
 
         <button type="submit">Generate Summary</button>
     </form>
 
+    <!-- Display Results -->
     <div id="result"></div>
 
     <script>
@@ -45,10 +55,12 @@
         const rangeValue = document.getElementById('rangeValue');
         const resultDiv = document.getElementById('result');
 
+        // Update the displayed range value as the slider is moved
         range.addEventListener('input', function() {
             rangeValue.textContent = range.value;
         });
 
+        // Handle file upload
         uploadForm.addEventListener('submit', function(event) {
             event.preventDefault();
 
@@ -62,7 +74,7 @@
             .then(data => {
                 if (data.message) {
                     alert(data.message);
-                    summarizeForm.style.display = 'block'; // Show summarize form after upload
+                    summarizeForm.style.display = 'block'; // Show summarize form after successful upload
                 } else {
                     alert(data.error);
                 }
@@ -70,6 +82,7 @@
             .catch(error => console.error('Error:', error));
         });
 
+        // Handle summarization form submission
         summarizeForm.addEventListener('submit', function(event) {
             event.preventDefault();
 
