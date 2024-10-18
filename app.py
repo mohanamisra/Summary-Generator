@@ -21,7 +21,8 @@ uploaded_data = {}
 API_KEY= 'AIzaSyB5FkCO_jtv_2y_6qPAof1z-towKH6DybE'
 genai.configure(api_key= API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
-file_path= "C:/Users/Harshita/Desktop/Python/Summary-Generator/amazon.csv"
+# file_path= "C:/Users/Harshita/Desktop/Python/Summary-Generator/amazon.csv"
+file_path = "./amazon.csv"
 
 
 # LOADING DATA
