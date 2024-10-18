@@ -12,6 +12,12 @@ import os
 from flask import Flask, request, render_template, jsonify
 app = Flask(__name__)
 
+app.secret_key = os.urandom(24) 
+# Initialize an empty dictionary to hold uploaded DataFrames
+uploaded_data = {}
+
+
+
 API_KEY= 'AIzaSyB5FkCO_jtv_2y_6qPAof1z-towKH6DybE'
 genai.configure(api_key= API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
@@ -116,17 +122,28 @@ def summarize_corpus(corpus_text, length):
 def index():
     return render_template('index.html')
 
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    file = request.files['file']
+    if file:
+        df = load_data(file)
+        # Store the uploaded DataFrame in the global variable
+        uploaded_data['data'] = preprocess_data(df)
+        return jsonify({'message': 'File uploaded and processed successfully!'})
+    return jsonify({'error': 'Failed to upload file.'}), 400
+
 @app.route('/summarize', methods=['POST'])
 def summarize():
     if request.method == "POST":
-        file = request.files['file']
         user_input = request.form['user_input']
         length= int(request.form['input_length']) 
         # Get the CSV file and user input from the request based on html file 
         #  Load the dataset
-        df = load_data(file)
-        # Preprocess the data
-        df = preprocess_data(df)
+        if 'data' not in uploaded_data:
+            return jsonify({'error': 'No file uploaded. Please upload a CSV file first.'}), 400
+
+        df = uploaded_data['data']
         text= filter_reviews(df, user_input)
         # Perform sentiment analysis on each review by creating a new column sSentiment'
         text['sentiment'] = text['cleaned_review'].apply(classify_sentiment)
