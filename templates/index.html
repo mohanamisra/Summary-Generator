@@ -19,16 +19,19 @@
 </head>
 <body>
     <h1>Summarize Product Reviews</h1>
-    <form id="summarizeForm" enctype="multipart/form-data">
+    <form id="uploadForm" enctype="multipart/form-data">
         <label for="fileInput">Upload CSV file:</label>
         <input type="file" id="fileInput" name="file" accept=".csv" required><br>
+        <button type="submit">Upload and Process</button>
+    </form>
 
+    <form id="summarizeForm" style="display: none;">
         <label for="productInput">Enter Product Name/Category:</label>
         <input type="text" id="productInput" name="user_input" placeholder="Product Name" required><br>
 
         <label for="summaryLength">Summary Length:</label>
-        <input type="range" id="summaryLength" name="input_length" min="10" max="100" value="50">
-        <span id="rangeValue">100</span> words<br>
+        <input type="range" id="summaryLength" name="input_length" min="50" max="100" value="50">
+        <span id="rangeValue">150</span> words<br>
 
         <button type="submit">Generate Summary</button>
     </form>
@@ -36,7 +39,8 @@
     <div id="result"></div>
 
     <script>
-        const form = document.getElementById('summarizeForm');
+        const uploadForm = document.getElementById('uploadForm');
+        const summarizeForm = document.getElementById('summarizeForm');
         const range = document.getElementById('summaryLength');
         const rangeValue = document.getElementById('rangeValue');
         const resultDiv = document.getElementById('result');
@@ -45,22 +49,44 @@
             rangeValue.textContent = range.value;
         });
 
-        form.addEventListener('submit', function(event) {
+        uploadForm.addEventListener('submit', function(event) {
             event.preventDefault();
 
-            const formData = new FormData(form);
+            const formData = new FormData(uploadForm);
+
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                    summarizeForm.style.display = 'block'; // Show summarize form after upload
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+
+        summarizeForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(summarizeForm);
 
             fetch('/summarize', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => {
-                console.log(response);
-                return response.json();
-                 })
+            .then(response => response.json())
             .then(data => {
-                resultDiv.innerHTML = `<h3>Positive Summary:</h3><p>${data.positive_summary}</p>
-                                       <h3>Negative Summary:</h3><p>${data.negative_summary}</p>`;
+                if (data.error) {
+                    resultDiv.innerHTML = `<p>${data.error}</p>`;
+                } else {
+                    resultDiv.innerHTML = `<h3>Positive Summary:</h3><p>${data.positive_summary}</p>
+                                           <h3>Negative Summary:</h3><p>${data.negative_summary}</p>`;
+                }
             })
             .catch(error => console.error('Error:', error));
         });
