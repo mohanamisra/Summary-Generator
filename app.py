@@ -10,7 +10,7 @@ from textblob import TextBlob
 import google.generativeai as genai
 import os
 from flask import Flask, request, render_template, jsonify
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 
 
 # Initialize an empty dictionary to hold uploaded DataFrames

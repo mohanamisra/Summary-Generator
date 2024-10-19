@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href= "{{ url_for('static', filename='css/style.css') }}">
     <title>Review Summarizer</title>
     <!-- <style>
         body {
@@ -21,7 +21,7 @@
 </head>
 <body>
     <div class="header">
-        <img src="images/Summarize product reviews.png" alt="header_image">
+        <img src="{{ url_for('static', filename='image/summarize_product_reviews.png') }}" alt="header_image">
         <!-- <h1>Summarize Product Reviews</h1> -->
     </div>
     
@@ -94,8 +94,14 @@
                 if (data.error) {
                     resultDiv.innerHTML = `<p>${data.error}</p>`;
                 } else {
-                    resultDiv.innerHTML = `<h3>Positive Summary:</h3><p>${data.positive_summary}</p>
-                                           <h3>Negative Summary:</h3><p>${data.negative_summary}</p>`;
+                    resultDiv.innerHTML = `<div class = "positive_reviews">
+	                                            <div class = "head">Positive Reviews</div>
+	                                            <div class = "para">${data.positive_summary}</div>
+                                            </div>
+                                           <div class = "negative_reviews">
+	                                            <div class = "head">Negative Reviews</div>
+	                                            <div class = "para">${data.negative_summary}</div>
+                                            </div>`;
                 }
             })
             .catch(error => console.error('Error:', error));
