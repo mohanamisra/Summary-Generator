@@ -1,5 +1,8 @@
 import pandas as pd
 import nltk
+import praw
+from praw.models import MoreComments
+from concurrent.futures import ThreadPoolExecutor
 nltk.download('punkt')
 nltk.download('stopwords')
 from nltk.corpus import stopwords
@@ -20,21 +23,68 @@ uploaded_data = {}
 
 load_dotenv()
 API_KEY= os.getenv('API_KEY')
+client_id= os.getenv('client_id')
+client_secret= os.getenv('client_secret')
+user_agent= os.getenv('user_agent')
+
 genai.configure(api_key= API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
-# file_path= "C:/Users/Harshita/Desktop/Python/Summary-Generator/amazon.csv"
-file_path = "./amazon.csv"
+# file_path = "./amazon.csv"
 
 
 # LOADING DATA
-def load_data(file_path):
-    try:
-        df = pd.read_csv(file_path)
-        print("Data loaded successfully!")
-        return df
-    except Exception as e:
-        print(f"Error loading file: {e}")
-        return None
+#def load_data(file_path):
+#    try:
+#        df = pd.read_csv(file_path)
+#        print("Data loaded successfully!")
+#        return df
+#    except Exception as e:
+#        print(f"Error loading file: {e}")
+#        return None
+
+reddit = praw.Reddit(
+    client_id= client_id,
+    client_secret= client_secret,
+    user_agent= user_agent
+)
+
+# Function to scrape data from Reddit
+def fetch_comments(submission, keyword):
+    comments = []
+    submission.comments.replace_more(limit=None)  # Fetch all comments at once
+    for top_level_comment in submission.comments:
+        if isinstance(top_level_comment, MoreComments):
+            continue
+        comments.append({
+            'product_name': keyword,
+            'review_content': top_level_comment.body,
+            'rating': None,  # You can manually add ratings if needed
+            'review_title': submission.title,
+            'category': submission.subreddit.display_name  # Get the subreddit name
+        })
+    return comments
+
+def scrape_reddit(keyword, subreddit='BuyItForLife', post_limit=100):
+    posts = []
+    
+    # Search across the specified subreddit or all of Reddit
+    submissions = reddit.subreddit(subreddit).search(keyword, limit=post_limit)
+
+    # Use ThreadPoolExecutor for concurrent fetching of comments
+    with ThreadPoolExecutor() as executor:
+        # Map the fetch_comments function to each submission
+        results = list(executor.map(lambda submission: fetch_comments(submission, keyword), submissions))
+
+    # Flatten the list of results
+    for result in results:
+        posts.extend(result)
+
+    # Convert the data into a DataFrame and save as CSV
+    df = pd.DataFrame(posts)
+    df.to_csv(f"{keyword}_reviews.csv", index=False)
+    print(f"Scraped data saved as {keyword}_reviews.csv")
+    return df
+
 
 # PREPROCESSING DATA
 def preprocess_data(df):
@@ -132,12 +182,11 @@ def summarize():
     if request.method == "POST":
         user_input = request.form['user_input']
         length= int(request.form['input_length']) 
-        df = load_data(file_path)
-        # Store the uploaded DataFrame in the global variable
-        uploaded_data['data'] = preprocess_data(df)
-        # Get the CSV file and user input from the request based on html file 
-        #  Load the dataset
-        df = uploaded_data['data']
+        subreddit= request.form['subreddit'].strip()
+        if not subreddit:
+            subreddit="BuyItForLife"
+        scraped_df = scrape_reddit(user_input, subreddit)
+        df = preprocess_data(scraped_df)
         text= filter_reviews(df, user_input)
         # Perform sentiment analysis on each review by creating a new column sSentiment'
         text['sentiment'] = text['cleaned_review'].apply(classify_sentiment)
