@@ -20,6 +20,7 @@ The AI model analyses the output csv of the scraping to generate the reviews and
 ```
 rstpip install scikit-learn pandas numpy textblob
 pip install flask
+pip install python-dotenv
 pip install nltk
 ```
 2. Clone the repository:
