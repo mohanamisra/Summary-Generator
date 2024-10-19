@@ -20,6 +20,7 @@ The AI model analyses the output csv of the scraping to generate the reviews and
 ```
 rstpip install scikit-learn pandas numpy textblob
 pip install flask
+pip install python-dotenv
 pip install nltk
 ```
 2. Clone the repository:
@@ -36,5 +37,12 @@ python app.py
 ```  
 
 
-### UI Preview:
-[to be added]
+### UI Preview:    
+  
+1. Enter the product name into the text input field:
+![img1](https://github.com/user-attachments/assets/74fa1240-03e5-467d-b5fe-6cdd6b70f9e4)
+
+2. Read the reviews categorised as positive/negative!
+   ![img2](https://github.com/user-attachments/assets/fb5d82bb-6364-442c-a0b9-bab32b4ec1a3)
+
+

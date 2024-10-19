@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href= "{{ url_for('static', filename='css/style.css') }}">
     <title>Review Summarizer</title>
-    <style>
+    <!-- <style>
         body {
             font-family: Arial, sans-serif;
         }
@@ -16,22 +17,30 @@
             margin: 10px 0;
         }
         
-    </style>
+    </style> -->
 </head>
 <body>
-    <h1>Summarize Product Reviews</h1>
-
+    <div class="header">
+        <img src="{{ url_for('static', filename='image/summarize_product_reviews.png') }}" alt="header_image">
+        <!-- <h1>Summarize Product Reviews</h1> -->
+    </div>
+    
+    
     <!-- Summarize Form (Hidden by default) -->
     <form id="summarizeForm">
-        <label for="productInput">Enter Product Name/Category:</label><br>
-        <input type="text" id="productInput" name="user_input" placeholder="Product Name" required><br>
-
-        <label for="summaryLength">Summary Length:</label><br>
-        <input type="range" id="summaryLength" name="input_length" min="10" max="100" value="50">
-        <span id="rangeValue">100</span> words<br>
-
+        <!-- <label for="productInput">Enter Product Name/Category:</label><br> -->
+        <input type="text" id="productInput" name="user_input" placeholder="Enter Product Name/category" required><br>
+        
+        <div class="summary">
+            <label for="summaryLength" id="summary_head" font_>Summary Length:</label><br>
+            <input type="range" id="summaryLength" name="input_length" min="10" max="100" value="50">
+            <span id="rangeValue">100</span> words<br>
+        </div>
+        
         <button type="submit">Generate Summary</button>
     </form>
+    
+    
 
     <!-- Display Results -->
     <div id="result"></div>
@@ -50,25 +59,25 @@
 
         // Handle file upload
         // uploadForm.addEventListener('submit', function(event) {
-          //  event.preventDefault();
+        //   event.preventDefault();
 
-            //const formData = new FormData(uploadForm);
+        //     const formData = new FormData(uploadForm);
 
-            //fetch('/upload', {
-              //  method: 'POST',
-                //body: formData
-            //})
-            //.then(response => response.json())
-            //.then(data => {
-               // if (data.message) {
-                 //   alert(data.message);
-                   // summarizeForm.style.display = 'block'; // Show summarize form after successful upload
-                //} else {
-                  //  alert(data.error);
-                //}
-            //})
-            //.catch(error => console.error('Error:', error));
-        //}); -->
+        //     fetch('/upload', {
+        //       method: 'POST',
+        //         body: formData
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         if (data.message) {
+        //             alert(data.message);
+        //             summarizeForm.style.display = 'block'; // Show summarize form after successful upload
+        //         } else {
+        //             alert(data.error);
+        //         }
+        //     })
+        //     .catch(error => console.error('Error:', error));
+        // }); // -->
 
         // Handle summarization form submission
         summarizeForm.addEventListener('submit', function(event) {
@@ -85,8 +94,14 @@
                 if (data.error) {
                     resultDiv.innerHTML = `<p>${data.error}</p>`;
                 } else {
-                    resultDiv.innerHTML = `<h3>Positive Summary:</h3><p>${data.positive_summary}</p>
-                                           <h3>Negative Summary:</h3><p>${data.negative_summary}</p>`;
+                    resultDiv.innerHTML = `<div class = "positive_reviews">
+	                                            <div class = "head">Positive Reviews</div>
+	                                            <div class = "para">${data.positive_summary}</div>
+                                            </div>
+                                           <div class = "negative_reviews">
+	                                            <div class = "head">Negative Reviews</div>
+	                                            <div class = "para">${data.negative_summary}</div>
+                                            </div>`;
                 }
             })
             .catch(error => console.error('Error:', error));
