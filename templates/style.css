@@ -125,8 +125,13 @@ button {
         justify-content: center;
         align-items: center;
         font-size: 10px;
-        padding-left: 5vw;
+        padding-left: 3px;
         box-sizing: border-box;
+    }
+
+    input { 
+        padding-left: 10px;
+        font-size: 10px; 
     }
 
     .summary{
