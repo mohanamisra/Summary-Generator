@@ -9,16 +9,17 @@ import re
 from textblob import TextBlob
 import google.generativeai as genai
 import os
+from dotenv import load_dotenv
 from flask import Flask, request, render_template, jsonify
 app = Flask(__name__, static_folder='static')
-
+app.secret_key = os.urandom(24)  
 
 # Initialize an empty dictionary to hold uploaded DataFrames
 uploaded_data = {}
 
 
-
-API_KEY= 'AIzaSyB5FkCO_jtv_2y_6qPAof1z-towKH6DybE'
+load_dotenv()
+API_KEY= os.getenv('API_KEY')
 genai.configure(api_key= API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
 # file_path= "C:/Users/Harshita/Desktop/Python/Summary-Generator/amazon.csv"
