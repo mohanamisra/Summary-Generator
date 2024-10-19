@@ -11,7 +11,7 @@ import google.generativeai as genai
 import os
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, jsonify
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static')
 app.secret_key = os.urandom(24)  
 
 # Initialize an empty dictionary to hold uploaded DataFrames
