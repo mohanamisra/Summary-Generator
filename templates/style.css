@@ -41,6 +41,7 @@ h1 {
     justify-content: space-evenly;
 }
 
+
 #productInput {
     width: 35vw;
     height: 7vh;
@@ -83,12 +84,29 @@ input {
 button {
     width: 10vw;
     height: 8vh;
-    background-color: rgb(239, 211, 27);
+    background-color: rgb(224, 204, 75);
+    transition: background-color 0.3s, color 0.3s;
     margin-bottom: 10%;
     border: solid rgb(114, 99, 1) 2px;
     border-radius: 8px;
     font-size: 15px;
 }
+.generate-btn:disabled {
+    background-color: gray;  /* Change background color */
+    color: white;            /* Change text color */
+    cursor: not-allowed;     /* Change cursor to indicate it's disabled */
+}
+
+.generate-btn:hover {
+    background-color: rgb(252,219,3); /* Darker shade on hover */
+}
+
+.generate-btn:disabled {
+    background-color: gray;  /* Change background when disabled */
+    color: white;            /* Keep text color */
+    cursor: not-allowed;     /* Not-allowed cursor */
+}
+
 
 @media screen and (max-width : 450px) {
 

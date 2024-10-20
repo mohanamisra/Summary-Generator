@@ -64,7 +64,7 @@ def fetch_comments(submission, keyword):
         })
     return comments
 
-def scrape_reddit(keyword, subreddit='BuyItForLife', post_limit=100):
+def scrape_reddit(keyword, subreddit='BuyItForLife', post_limit=50):
     posts = []
     
     # Search across the specified subreddit or all of Reddit
@@ -83,6 +83,8 @@ def scrape_reddit(keyword, subreddit='BuyItForLife', post_limit=100):
     df = pd.DataFrame(posts)
     df.to_csv(f"{keyword}_reviews.csv", index=False)
     print(f"Scraped data saved as {keyword}_reviews.csv")
+    if df.empty:
+        return jsonify({"message":  "No data found from Reddit for this query."}), 404 
     return df
 
 
@@ -150,7 +152,11 @@ def filter_reviews(df, user_input):
             print(f"No reviews found for {user_input}.")
         else:
             print(f"Found {len(filtered_df)} reviews for {user_input}.")
-            return filtered_df    
+            return filtered_df  
+    if len(filtered_df) == 0:
+        return jsonify({"message": "No reviews found"}), 404  # Send a 404 status code
+    # If reviews exist, return them as normal
+    return jsonify({"reviews": filtered_df})  
 
 # SENTIMENT ANALYSIS
 def classify_sentiment(text):
@@ -172,10 +178,14 @@ def summarize_corpus(corpus_text, length):
     return response.text
 
 # FINAL DATA PROCESSING
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204
 
 @app.route('/summarize', methods=['POST'])
 def summarize():
@@ -188,6 +198,7 @@ def summarize():
         scraped_df = scrape_reddit(user_input, subreddit)
         df = preprocess_data(scraped_df)
         text= filter_reviews(df, user_input)
+        # review_count= len(text)
         # Perform sentiment analysis on each review by creating a new column sSentiment'
         text['sentiment'] = text['cleaned_review'].apply(classify_sentiment)
         # filter positive reviews
@@ -202,7 +213,7 @@ def summarize():
         # Print the summaries
         print("Positive Reviews Summary:\n", positive_summary)
         print("\nNegative Reviews Summary:\n", negative_summary)
-        return jsonify({'positive_summary': positive_summary, 'negative_summary': negative_summary})
+        return jsonify({'positive_summary': positive_summary, 'negative_summary': negative_summary })
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

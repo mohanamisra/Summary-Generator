@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <link rel="stylesheet" href= "{{ url_for('static', filename='css/style.css') }}">
     <title>Review Summarizer</title>
     <!-- <style>
@@ -38,12 +39,13 @@
             <span id="rangeValue">100</span> words<br>
         </div>
         
-        <button type="submit">Generate Summary</button>
+        <button type="submit" class="generate-btn">Generate Summary</button>
     </form>
     
     
 
     <!-- Display Results -->
+    <div id="loader"></div>
     <div id="result"></div>
 
     <script>
@@ -52,6 +54,8 @@
         const range = document.getElementById('summaryLength');
         const rangeValue = document.getElementById('rangeValue');
         const resultDiv = document.getElementById('result');
+        const generateButton = document.querySelector('.generate-btn');
+  
 
         // Update the displayed range value as the slider is moved
         range.addEventListener('input', function() {
@@ -85,16 +89,28 @@
             event.preventDefault();
 
             const formData = new FormData(summarizeForm);
+            generateButton.textContent = 'Generating Summary...';
+            generateButton.disabled = true;
 
             fetch('/summarize', {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
+            .then(response => response.json()) 
             .then(data => {
+                
+            generateButton.textContent = 'Generate Summary';
+            generateButton.disabled = false;
                 if (data.error) {
                     resultDiv.innerHTML = `<p>${data.error}</p>`;
-                } else {
+                } 
+                else if (data.message && data.message === "No data found from Reddit for this query.") {
+                           // If the backend returns "No reviews found" message
+                       resultDiv.innerHTML = `<p>No data found for the given query.</p>`;}
+                else if (data.message && data.message === "No reviews found") {
+                           // If the backend returns "No reviews found" message
+                       resultDiv.innerHTML = `<p>No reviews found for the given query.</p>`;} 
+                else {
                     resultDiv.innerHTML = `<div class = "positive_reviews">
 	                                            <div class = "head">Positive Reviews</div>
 	                                            <div class = "para">${data.positive_summary}</div>
@@ -105,8 +121,19 @@
                                             </div>`;
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error =>{
+            resultDiv.innerHTML = `<p>An error occurred while processing your request. Please try again later.</p>`;
+                generateButton.textContent = 'Generate Summary'; // Reset button text
+                generateButton.disabled = false; // Enable button again
+                console.error('Error:', error);
+        });           
+            
+           
+
         });
+
+       
+              
     </script>
 </body>
 </html>
