@@ -21,15 +21,20 @@ app.secret_key = os.urandom(24)
 uploaded_data = {}
 
 
-load_dotenv()
-API_KEY= os.getenv('API_KEY')
-client_id= os.getenv('client_id')
-client_secret= os.getenv('client_secret')
-user_agent= os.getenv('user_agent')
+# load_dotenv()
+#API_KEY= os.getenv('API_KEY')
+#client_id= os.getenv('client_id')
+#client_secret= os.getenv('client_secret')
+#user_agent= os.getenv('user_agent')
+
+API_KEY= 'AIzaSyB5FkCO_jtv_2y_6qPAof1z-towKH6DybE'
+client_id="X9w8mCZYDlMP_etw5IUq2w"
+client_secret="BAd8nxuBlYmxuGBXVpZRKSYa3O5vDQ"
+user_agent="windows:Scraper:v1.0.0:(by u/<BestSavings2714>)"
 
 genai.configure(api_key= API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
-# file_path = "./amazon.csv"
+file_path = "./amazon.csv"
 
 
 # LOADING DATA
@@ -64,7 +69,7 @@ def fetch_comments(submission, keyword):
         })
     return comments
 
-def scrape_reddit(keyword, subreddit='BuyItForLife', post_limit=50):
+def scrape_reddit(keyword, subreddit='BuyItForLife', post_limit=100):
     posts = []
     
     # Search across the specified subreddit or all of Reddit
@@ -192,11 +197,12 @@ def summarize():
     if request.method == "POST":
         user_input = request.form['user_input']
         length= int(request.form['input_length']) 
-        subreddit= request.form['subreddit'].strip()
-        if not subreddit:
-            subreddit="BuyItForLife"
-        scraped_df = scrape_reddit(user_input, subreddit)
-        df = preprocess_data(scraped_df)
+        
+       # subreddit= request.form['subreddit'].strip()
+       # if not subreddit:
+       #     subreddit="BuyItForLife"
+        df= pd.read_csv(file_path)
+        df = preprocess_data(df)
         text= filter_reviews(df, user_input)
         # review_count= len(text)
         # Perform sentiment analysis on each review by creating a new column sSentiment'
