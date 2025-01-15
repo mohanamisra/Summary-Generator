@@ -13,7 +13,6 @@ The AI model analyses the output csv of the scraping to generate the reviews and
 2. To help organisations get an idea of what their target demographic thinks of their product
 3. To help product-designers understand what direction the market points to
 4. To help users make smart decisions before purchase of a product
-5.
 
 ### How to Use the Project:
 1. Installations:
